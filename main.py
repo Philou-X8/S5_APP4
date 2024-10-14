@@ -44,13 +44,12 @@ def rotate_image(image):
     size_x = len(image[0])
     img_rot = np.zeros((size_y, size_x))
     rot_matrix = [[0, 1], [-1, 0]]
-    for e1 in range( size_y ): # Y scan
-        for e2 in range( size_x ): # X scan
-            coord = [e1, e2]
-            u = np.dot(rot_matrix, coord)
-            u1 = u[0]
-            u2 = u[1]
-            img_rot[u1][u2] = image[e1][e2]
+    for yy in range( size_y ): # Y scan
+        for xx in range( size_x ): # X scan
+            e = [xx-size_x+1, size_y-yy-1] # convertion to e base
+            u = np.dot(rot_matrix, e) # apply rotation
+            p = [u[0], size_y-1 - u[1]] # convertion to file format base
+            img_rot[p[1]][p[0]] = image[yy][xx]
 
     return img_rot
 
