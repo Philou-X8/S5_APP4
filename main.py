@@ -132,6 +132,12 @@ def freq_filter_auto(image):
     return img_out
 
 
+def compress_image(image, percent):
+    img_cov = np.cov(image)
+
+    img_out = img_cov # TEMP
+    return img_out
+
 if __name__ == '__main__':
 
     test = np.arange(16).reshape(4, 4)
@@ -155,6 +161,8 @@ if __name__ == '__main__':
     plt.imshow(img_filtered)
     plt.show()
 
+    img_compress70 = compress_image(img_filtered, 70)
+    img_compress50 = compress_image(img_filtered, 50)
 
     plt.gray()
     plt.subplot(2, 3, 1); plt.title('source image')
@@ -163,8 +171,14 @@ if __name__ == '__main__':
     plt.imshow(img_cleaned)
     plt.subplot(2, 3, 3); plt.title('image rotated')
     plt.imshow(img_rotated)
-    plt.subplot(2, 3, 4); plt.title('image high freq removed')
+    plt.subplot(2, 3, 4); plt.title('noise removed')
     plt.imshow(img_filtered)
+    plt.subplot(2, 3, 4); plt.title('noise removed')
+    plt.imshow(img_filtered)
+    plt.subplot(2, 3, 5); plt.title('compressed 70%')
+    plt.imshow(img_compress70)
+    plt.subplot(2, 3, 6); plt.title('compressed 50%')
+    plt.imshow(img_compress50)
     plt.show()
 
 
