@@ -55,10 +55,14 @@ def rotate_image(image):
 
 def freq_filter(image):
 
-    img_freq = image
+    result = np.zeros([len(image),len(image[0])])
+
+    b = [1 ,2 ,1]
+    a = [2.3914,1.1072,0.5014]
 
 
-    return img_freq
+    result = signal.lfilter(b,a,image)
+    return result
 
 
 if __name__ == '__main__':
@@ -74,14 +78,16 @@ if __name__ == '__main__':
     #img = img[0:200]
     img_cleaned = noise_remove(img)
     img_rotated = rotate_image(img_cleaned)
-
+    img_filtered = freq_filter(img_rotated)
     plt.gray()
-    plt.subplot(1, 3, 1); plt.title('source image')
+    plt.subplot(2, 2, 1); plt.title('source image')
     plt.imshow(img)
-    plt.subplot(1, 3, 2); plt.title('filtered image')
+    plt.subplot(2, 2, 2); plt.title('denoised image')
     plt.imshow(img_cleaned)
-    plt.subplot(1, 3, 3); plt.title('image rotated')
+    plt.subplot(2, 2, 3); plt.title('image rotated')
     plt.imshow(img_rotated)
+    plt.subplot(2, 2, 4); plt.title('image filtered')
+    plt.imshow(img_filtered)
     plt.show()
 
 
