@@ -53,10 +53,48 @@ def rotate_image(image):
 
     return img_rot
 
-def freq_filter_manual(image):
-    img_freq = image
-    return img_freq
+def freq_filter(image):
 
+    result = np.zeros([len(image),len(image[0])])
+
+    b = [1 ,2 ,1]
+    a = [2.3914,1.1072,0.5014]
+
+
+    result = signal.lfilter(b,a,image)
+    return result
+
+def freq_filter_with_python(image):
+    result = np.zeros([len(image),len(image[0])])
+
+    wp = 500
+    fs = 1600
+    order, _ = signal.buttord(wp,750,0.2,60,fs)
+
+    b,a = signal.butter(order,wp,fs=fs)
+
+    print('Butter : ' ,order)
+
+
+    order, _ = signal.cheb1ord(wp,750,0.2,60,fs)
+
+    print('Cheb1 : ' ,order)
+
+    order, _ = signal.cheb2ord(wp,750,0.2,60,fs)
+
+    print('Cheb2 : ' ,order)
+
+
+    order, wn = signal.ellipord(wp,750,0.2,60,fs)
+
+    print('Ellip : ' ,order)
+
+    b,a = signal.ellip(order,rp=0.2,rs=60,Wn=wn,fs=fs)
+
+    result = signal.lfilter(b,a,image)
+
+
+    return result
 
 def freq_filter_auto(image):
     f_sample = 1600 # sampling rate
@@ -119,13 +157,12 @@ if __name__ == '__main__':
 
     #img = load_img_gray('images/goldhill.png')
     img = np.load('images/image_complete.npy')
-    print(len(img))
-    print(len(img[0]))
+    #print(len(img))
+    #print(len(img[0]))
     #img = img[0:200]
     img_cleaned = noise_remove(img)
     img_rotated = rotate_image(img_cleaned)
-
-    img_denoise = freq_filter_auto(img_rotated)
+    img_filtered = freq_filter(img_rotated)
 
     plt.gray()
     plt.subplot(2, 3, 1); plt.title('source image')
