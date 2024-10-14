@@ -64,6 +64,37 @@ def freq_filter(image):
     result = signal.lfilter(b,a,image)
     return result
 
+def freq_filter_with_python(image):
+    result = np.zeros([len(image),len(image[0])])
+
+    wp = 500
+    fs = 1600
+    order, _ = signal.buttord(wp,750,0.2,60,fs)
+
+    b,a = signal.butter(order,wp,fs=fs)
+
+    print('Butter : ' ,order)
+
+
+    order, _ = signal.cheb1ord(wp,750,0.2,60,fs)
+
+    print('Cheb1 : ' ,order)
+
+    order, _ = signal.cheb2ord(wp,750,0.2,60,fs)
+
+    print('Cheb2 : ' ,order)
+
+    
+    order, wn = signal.ellipord(wp,750,0.2,60,fs)
+
+    print('Ellip : ' ,order)
+
+    b,a = signal.ellip(order,rp=0.2,rs=60,Wn=wn,fs=fs)
+
+    result = signal.lfilter(b,a,image)
+
+
+    return result
 
 if __name__ == '__main__':
 
@@ -73,12 +104,14 @@ if __name__ == '__main__':
 
     #img = load_img_gray('images/goldhill.png')
     img = np.load('images/image_complete.npy')
-    print(len(img))
-    print(len(img[0]))
+    #print(len(img))
+    #print(len(img[0]))
     #img = img[0:200]
     img_cleaned = noise_remove(img)
     img_rotated = rotate_image(img_cleaned)
     img_filtered = freq_filter(img_rotated)
+
+    plt.figure()
     plt.gray()
     plt.subplot(2, 2, 1); plt.title('source image')
     plt.imshow(img)
@@ -88,6 +121,20 @@ if __name__ == '__main__':
     plt.imshow(img_rotated)
     plt.subplot(2, 2, 4); plt.title('image filtered')
     plt.imshow(img_filtered)
+    plt.show(block=False)
+
+
+
+    plt.figure()
+
+    plt.subplot(1,2,1);plt.title('Manual filter')
+    
+    plt.imshow(img_filtered)
+    
+    img_filtered_py = freq_filter_with_python(img_rotated)
+    plt.subplot(1,2,2);plt.title('Py filter')
+    
+    plt.imshow(img_filtered_py)
     plt.show()
 
 
