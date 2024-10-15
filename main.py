@@ -21,9 +21,6 @@ def load_img_color(path):
 
 
 def noise_remove(image):
-    img_line = image.transpose()
-    #img_line = image.ravel()
-    #img_line = image
 
     zero_arr = [ 0.9 * np.exp(1j*np.pi/2) , 0.9 * np.exp(-1j*np.pi/2),  0.95 * np.exp(1j*np.pi/8) , 0.95 * np.exp(-1j*np.pi/8) ]
     pole_arr = [0, -0.99, -0.99, 0.8]
@@ -37,9 +34,6 @@ def noise_remove(image):
     img_filtered = np.real(img_filtered)
 
     return img_filtered
-    #plt.gray()
-    #imgplot = plt.imshow(img_filtered); plt.title('img filtered')
-    #plt.show()
 
 
 def rotate_image(image):
@@ -109,37 +103,43 @@ def freq_filter_auto(image):
 
 
 def compress_image(image, percent):
-    img_cov = np.cov(image)
-    ident = np.identity(len(img_cov))
 
+    img_cov = np.cov(image)
     e_val, e_vect = np.linalg.eig(img_cov)
 
-    e_sorted = [x for _, x in sorted(zip(e_val, e_vect))]
+    #e_sorted = [x for _, x in sorted(zip(e_val, e_vect))]
+    #e_sorted = np.array(e_sorted)
+    e_sorted = e_vect # e_vect is already sorted by biggest e_val, from the linalg.eig() function
 
-    img_out = img_cov # TEMP
+    # encode
+    img_encoded = np.matmul(e_sorted.T, image)
+
+    # compress
+    cutoff_index = int(len(image)*0.01*(100-percent))
+    img_cut = img_encoded
+    img_cut[cutoff_index:] = 0
+
+    # decode
+    e_vect_inv = np.linalg.inv(e_sorted.T)
+    img_out = np.matmul(e_vect_inv, img_cut)
+
     return img_out
 
 
 if __name__ == '__main__':
 
-    test = np.arange(16).reshape(4, 4)
-    test2 = test.transpose()
-    #test3 = np.reshape(test2, [4, 4])
-
     #img = load_img_gray('images/goldhill.png')
-    img = np.load('images/image_complete.npy')
-    #print(len(img))
-    #print(len(img[0]))
-    #img = img[0:200]
-    img_cleaned = noise_remove(img)
+    img_raw = np.load('images/image_complete.npy')
+
+    img_cleaned = noise_remove(img_raw)
     img_rotated = rotate_image(img_cleaned)
     img_filtered1 = freq_filter(img_rotated)
     img_filtered = freq_filter_auto(img_rotated)
 
     plt.gray()
-    plt.subplot(1, 2, 1); plt.title('Laurent filter')
+    plt.subplot(1, 2, 1); plt.title('bilinear transform')
     plt.imshow(img_filtered1)
-    plt.subplot(1, 2, 2); plt.title('Philippe filter')
+    plt.subplot(1, 2, 2); plt.title('generated filters')
     plt.imshow(img_filtered)
     plt.show()
 
@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
     plt.gray()
     plt.subplot(2, 3, 1); plt.title('source image')
-    plt.imshow(img)
+    plt.imshow(img_raw)
     plt.subplot(2, 3, 2); plt.title('filtered image')
     plt.imshow(img_cleaned)
     plt.subplot(2, 3, 3); plt.title('image rotated')
@@ -162,5 +162,3 @@ if __name__ == '__main__':
     plt.subplot(2, 3, 6); plt.title('compressed 50%')
     plt.imshow(img_compress50)
     plt.show()
-
-
