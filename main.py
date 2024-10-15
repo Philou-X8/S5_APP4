@@ -56,6 +56,14 @@ def freq_filter(image):
     b = [0.418 ,0.836 ,0.418]
     a = [1,0.463,0.21]
 
+    zplane(b,a)
+    w,h = signal.freqz(b,a)
+    h = np.abs(h)
+    plt.figure()
+    plt.plot(w,h);plt.title("Frequency response bilinear method")
+    plt.xlabel('Frequence en rad/sec')
+    plt.show(block=False)
+
     img_out = signal.lfilter(b,a,image)
     return img_out
 
@@ -95,6 +103,14 @@ def freq_filter_auto(image):
         filt_type = 'ellip'
         b, a = signal.ellip(n_ellip, gpass, gstop, wp, 'low', fs=fs)
 
+    plt.figure()
+    zplane(b,a)
+    w,h = signal.freqz(b,a)
+    h = np.abs(h)
+    plt.figure()
+    plt.plot(w,h);plt.title("Frequency response python method")
+    plt.xlabel('Frequence en rad/sec')
+    plt.show(block=False)
 
     img_out = signal.lfilter(b, a, image)
     print(n_order)
@@ -136,6 +152,7 @@ if __name__ == '__main__':
     img_filtered1 = freq_filter(img_rotated)
     img_filtered = freq_filter_auto(img_rotated)
 
+    plt.figure()
     plt.gray()
     plt.subplot(1, 2, 1); plt.title('bilinear transform')
     plt.imshow(img_filtered1)
