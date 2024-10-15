@@ -112,7 +112,7 @@ def compress_image(image, percent):
     e_sorted = e_vect # e_vect is already sorted by biggest e_val, from the linalg.eig() function
 
     # encode
-    img_encoded = np.matmul(e_sorted.T, image)
+    img_encoded = np.dot(e_sorted.T, image)
 
     # compress
     cutoff_index = int(len(image)*0.01*(100-percent))
@@ -121,7 +121,7 @@ def compress_image(image, percent):
 
     # decode
     e_vect_inv = np.linalg.inv(e_sorted.T)
-    img_out = np.matmul(e_vect_inv, img_cut)
+    img_out = np.dot(e_vect_inv, img_cut)
 
     return img_out
 
