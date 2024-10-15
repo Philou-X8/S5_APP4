@@ -96,6 +96,15 @@ def freq_filter_with_python(image):
 
     return result
 
+
+def compression(image):
+    result = np.zeros([len(image),len(image[0])])
+
+    
+
+    return result
+
+
 if __name__ == '__main__':
 
     test = np.arange(16).reshape(4, 4)
