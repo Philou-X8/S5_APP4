@@ -5,6 +5,7 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
+from zplane import zplane
 
 
 def load_img_gray(path):
@@ -30,6 +31,8 @@ def noise_remove(image):
     z0 = np.poly(zero_arr)
     p0 = np.poly(pole_arr)
 
+    zplane(p0,z0)
+
     img_filtered = signal.lfilter(p0, z0, image)
     img_filtered = np.real(img_filtered)
 
@@ -50,41 +53,14 @@ def rotate_image(image):
             u = np.dot(rot_matrix, e) # apply rotation
             p = [u[0], (size_y-1)-u[1]] # convertion to file format base
             img_rot[p[1]][p[0]] = image[yy][xx] # transfer pixel
-
+ 
     return img_rot
 
 def freq_filter(image):
     img_out = np.zeros([len(image),len(image[0])])
 
-    b = [1 ,2 ,1]
-    a = [2.3914,1.1072,0.5014]
-
-    img_out = signal.lfilter(b,a,image)
-    return img_out
-
-def freq_filter_with_python(image):
-    img_out = np.zeros([len(image),len(image[0])])
-
-    wp = 500
-    fs = 1600
-
-    # buttord
-    order, _ = signal.buttord(wp,750,0.2,60,fs)
-    print('Butter : ' ,order)
-    b,a = signal.butter(order,wp,fs=fs)
-
-    # cheb1ord
-    order, _ = signal.cheb1ord(wp,750,0.2,60,fs)
-    print('Cheb1 : ' ,order)
-
-    # cheb2ord
-    order, _ = signal.cheb2ord(wp,750,0.2,60,fs)
-    print('Cheb2 : ' ,order)
-
-    # ellipord
-    order, wn = signal.ellipord(wp,750,0.2,60,fs)
-    print('Ellip : ' ,order)
-    b,a = signal.ellip(order,rp=0.2,rs=60,Wn=wn,fs=fs)
+    b = [0.418 ,0.836 ,0.418]
+    a = [1,0.463,0.21]
 
     img_out = signal.lfilter(b,a,image)
     return img_out
@@ -142,14 +118,6 @@ def compress_image(image, percent):
 
     img_out = img_cov # TEMP
     return img_out
-
-
-def compression(image):
-    result = np.zeros([len(image),len(image[0])])
-
-    
-
-    return result
 
 
 if __name__ == '__main__':
