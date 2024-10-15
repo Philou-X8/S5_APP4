@@ -134,6 +134,11 @@ def freq_filter_auto(image):
 
 def compress_image(image, percent):
     img_cov = np.cov(image)
+    ident = np.identity(len(img_cov))
+
+    e_val, e_vect = np.linalg.eig(img_cov)
+
+    e_sorted = [x for _, x in sorted(zip(e_val, e_vect))]
 
     img_out = img_cov # TEMP
     return img_out
