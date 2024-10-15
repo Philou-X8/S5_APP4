@@ -160,7 +160,7 @@ if __name__ == '__main__':
     #img = img[0:200]
     img_cleaned = noise_remove(img)
     img_rotated = rotate_image(img_cleaned)
-    img_filtered1 = freq_filter_with_python(img_rotated)
+    img_filtered1 = freq_filter(img_rotated)
     img_filtered = freq_filter_auto(img_rotated)
 
     plt.gray()
